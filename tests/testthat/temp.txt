@@ -1,0 +1,9 @@
+Testing...
+Symmetric FastICA using logcosh approx. to neg-entropy function
+Iteration 1 tol = 0.4241902
+Iteration 2 tol = 0.04460134
+Iteration 3 tol = 0.003236127
+Iteration 4 tol = 0.0008533929
+Iteration 5 tol = 0.0003919445
+Iteration 6 tol = 0.0001530015
+Iteration 7 tol = 7.716989e-05

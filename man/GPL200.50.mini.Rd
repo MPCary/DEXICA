@@ -5,16 +5,13 @@
 \alias{GPL200.50.mini}
 \title{Data: A small compendium of \emph{C. elegans} microarray data}
 \format{A numeric matrix with probesets in rows and arrays in columns.}
-\source{
-See \code{\link[DEXDATA.Celegans]{GPL200.1386}}
-}
 \usage{
 GPL200.50.mini
 }
 \description{
 A \code{10,000 x 50} matrix containing Affymetrix microarray data gathered from
 the GEO database for the model orgnaism C. elegans.  This matrix is a small subset
-of the \code{\link[DEXDATA.Celegans]{GPL200.1386}} matrix from the DEXDATA.Celegans
+of the \code{GPL200.1386} matrix from the DEXDATA.Celegans
 package intended for use in example scripts.  Rows of the matrix (probesets)
 were chosen at random, but specific columns were selected in order to capture all of
 the arrays from experiments with the fewest number of arrays, up to 50 arrays total.

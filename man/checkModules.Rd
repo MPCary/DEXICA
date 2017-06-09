@@ -37,7 +37,7 @@ annotations.
 This function evaluates a set of predicted gene modules by testing whether
 each module is enriched for any gene annotations.  Enrichment p-values are calculated using
 hypergeometric statistics (see \code{\link[stats]{phyper}}).  If x is not a binary matrix,
-module membership is determined using \code{\link[DEXICA]{partitionComponents}} with default
+module membership is determined using \code{\link[DEXICA]{partition}} with default
 paramaters.  The FDR-correction (see \code{\link[stats]{p.adjust}}) is applied to all
 p-values prior to determining signficance.
 }

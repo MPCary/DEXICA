@@ -1,7 +1,7 @@
 #' Run the fastICA algorithm without matrix preprocessing
 #'
 #' @description Runs the fastICA algorithm but does not perform any matrix preprocessing operations
-#' first (as \code{\link[fastICA]{fastICA}} does.)  Preprocessing steps should be carried out
+#' first (this differs from the \code{fastICA} function in the \pkg{fastICA} package.)  Preprocessing steps should be carried out
 #' by running other functions, e.g. \code{\link{preprocessMatrix}}, on the input matrix prior to
 #' using this function.
 #'

@@ -31,7 +31,7 @@ more practical when testing a large number of parameters to execude the jobs in
 parallel (see Use Cases in the DEXICA vignette)
 
 If params is NULL, a single parameter set will be supplied using default values for
-the \code{\link[DEXICA]{ParameterSet}} constructor.  If output is NULL, results will
+the \code{\link[DEXICA]{parameterSet}} constructor.  If output is NULL, results will
 be directed to \code{stdout()}.
 }
 \section{Methods (by generic)}{
@@ -52,7 +52,7 @@ be directed to \code{stdout()}.
 in module evaltation (see \code{\link[DEXICA]{checkModules}})}
 
 \item{\code{params}}{A ParameterSet object containing desired parameter ranges to be
-tested (see \code{\link[DEXICA]{ParameterSet}})}
+tested (see \code{\link[DEXICA]{parameterSet}})}
 
 \item{\code{output}}{Character string name of output file}
 }}

@@ -22,7 +22,7 @@ setClassUnion("characterOrNULL", c("character", "NULL"))
 #'@slot annmats A matrix or list of matrices containing the annotation matrices to be used
 #'in module evaltation (see \code{\link[DEXICA]{checkModules}})
 #'@slot params A ParameterSet object containing desired parameter ranges to be
-#'tested (see \code{\link[DEXICA]{ParameterSet}})
+#'tested (see \code{\link[DEXICA]{parameterSet}})
 #'@slot output Character string name of output file
 #'
 #'@details A DexBatch object defines a set of jobs.  Each job first predicts a set of
@@ -36,7 +36,7 @@ setClassUnion("characterOrNULL", c("character", "NULL"))
 #'parallel (see Use Cases in the DEXICA vignette)
 #'
 #'If params is NULL, a single parameter set will be supplied using default values for
-#'the \code{\link[DEXICA]{ParameterSet}} constructor.  If output is NULL, results will
+#'the \code{\link[DEXICA]{parameterSet}} constructor.  If output is NULL, results will
 #'be directed to \code{stdout()}.
 #'
 #'@export

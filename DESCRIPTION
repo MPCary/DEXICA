@@ -19,7 +19,7 @@ Suggests: knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
-Collate: 
+Collate:
     'ParameterSet.R'
     'DexBatch.R'
     'checkIO.R'
@@ -33,3 +33,5 @@ Collate:
     'predictModules.R'
     'preprocessMatrix.R'
     'splitMatrix.R'
+Imports: neuralnet (>= 1.33),
+    moments (>= 0.14)

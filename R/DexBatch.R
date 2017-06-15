@@ -237,15 +237,28 @@ setMethod(f = "runJob", signature = "DexBatch",
                     append = TRUE, sep = "\t")
             } else {
               # Writing to a file
+              # The user may have deleted the output file (e.g., from a previous)
+              # run, so create it if needed.
+              con = file(object@output)
+              open(con, open = "a")
+              if(isOpen(con)) {
+                # Connection opened successfully
+              } else {
+                stop("could not open output file connection")
+              }
+
               # If the file is empty, first write the column names
               if (file.info(object@output)$size == 0) {
-                write(names(results), file= object@output, ncolumns = length(results),
+                write(names(results), file= con, ncolumns = length(results),
                       append = TRUE, sep = "\t")
               }
-              write(unlist(results), file= object@output, ncolumns = length(results),
+              # Write run results
+              write(unlist(results), file= con, ncolumns = length(results),
                          append = TRUE, sep = "\t")
-            }
-          })
+              close(con)
+            } # End write to file
+          } # End runJob function
+)
 
 
 

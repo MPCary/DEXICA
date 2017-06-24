@@ -1,7 +1,7 @@
 Package: DEXICA
 Type: Package
 Title: Functions for predicting and validating gene modules
-Version: 0.1.2
+Version: 2.0.0
 Author: Michael Cary <michael.cary.dev@gmail.com>
 Maintainer: Michael Cary <michael.cary.dev@gmail.com>
 Description: This package contains functions for predicting gene modules

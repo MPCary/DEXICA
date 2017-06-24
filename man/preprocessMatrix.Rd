@@ -5,7 +5,7 @@
 \title{Preprocess a data matrix}
 \usage{
 preprocessMatrix(x, center.cols = TRUE, scale.cols = FALSE, center.rows = FALSE,
-scale.rows = FALSE, simultaneous = FALSE, verbose = TRUE)
+scale.rows = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{x}{a numeric matrix(-like object), typically with genes in rows and samples
@@ -20,8 +20,6 @@ scale.rows = FALSE, simultaneous = FALSE, verbose = TRUE)
 \item{scale.rows}{a logical value indicating whether to adjust rows to have unit variance}
 
 \item{verbose}{a logical value indicating the desired level of output as the algorithm runs}
-
-\item{simlutanous}{a logical value indicating whether to adjust rows and columns simultaneously}
 }
 \value{
 A centered and/or scaled matrix.
@@ -39,6 +37,5 @@ x = preprocessMatrix(x)
 
 }
 \seealso{
-\code{\link[base]{scale}},
-\code{\link[scaleMatrix]{scaleMatrix}}
+\code{\link[base]{scale}}
 }

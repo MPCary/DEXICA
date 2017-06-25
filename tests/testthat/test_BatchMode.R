@@ -35,9 +35,9 @@ test_that("the dexBatch object was created successfully", {
   expect_equal(countJobs(db), 6)
 })
 
-# Test compatibility with LazyMatrix (if that's installed)
-if("LazyMatrix" %in% installed.packages()) {
-  library(LazyMatrix)
+# Test compatibility with LazyData (if that's installed)
+if("LazyData" %in% installed.packages()) {
+  library(LazyData)
   p = parameterSet(n.comp = c(5,10,20))
   x = lazyMatrix(name = "GPL200.50.mini", package = "DEXICA")
   db = dexBatch(compen = list("x" = x, "y" = y), annmats = list("a1" = a1, "a2" = a2, "a3" = a3),

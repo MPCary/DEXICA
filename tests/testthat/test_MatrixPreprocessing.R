@@ -24,3 +24,13 @@ x.p = preprocessMatrix(x, center.cols = TRUE, scale.cols = TRUE, center.rows = T
 test_that("the SDs of rows of x are 1", {
   expect_true(all(apply(x.p, 1, FUN = function(y) round(sd(y), 6)) == 1))
 })
+
+x.p = preprocessMatrix(x, center.cols = TRUE, scale.cols = TRUE, center.rows = TRUE,
+                       scale.rows = TRUE, simultaneous = TRUE)
+test_that("simultaneous row/col scaling works", {
+  expect_true(all(apply(x.p, 1, FUN = function(y) round(sd(y), 6)) == 1))
+  expect_true(all(apply(x.p, 1, FUN = function(y) round(mean(y), 6)) == 0))
+  expect_true(all(apply(x.p, 2, FUN = function(y) round(sd(y), 6)) == 1))
+  expect_true(all(apply(x.p, 2, FUN = function(y) round(mean(y), 6)) == 0))
+})
+

@@ -1,7 +1,7 @@
 Package: DEXICA
 Type: Package
 Title: Functions for predicting and validating gene modules
-Version: 2.0.0
+Version: 2.0.1
 Author: Michael Cary <michael.cary.dev@gmail.com>
 Maintainer: Michael Cary <michael.cary.dev@gmail.com>
 Description: This package contains functions for predicting gene modules
@@ -19,7 +19,7 @@ Suggests: knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
-Collate:
+Collate: 
     'ParameterSet.R'
     'DexBatch.R'
     'checkIO.R'
@@ -32,6 +32,7 @@ Collate:
     'partition.R'
     'predictModules.R'
     'preprocessMatrix.R'
+    'scaleMatrix.R'
     'splitMatrix.R'
 Imports: neuralnet (>= 1.33),
     moments (>= 0.14)

@@ -5,8 +5,8 @@
 \title{Scale rows and columns of a matrix}
 \usage{
 scaleMatrix(x, center.rows = TRUE, center.cols = TRUE, scale.rows = TRUE,
-scale.cols = TRUE, steps = 1000, bad.row.action = c("resample", "remove"),
-bad.col.action = c("resample", "remove"), set.na.to = 0, verbose = FALSE)
+scale.cols = TRUE, steps = 1000, set.na.to = c(NA, "mean", "median", "resample"),
+zero.var.action = c("none", "resample", "remove"), verbose = FALSE)
 }
 \arguments{
 \item{x}{a numeric matrix(-like object)}
@@ -19,13 +19,11 @@ bad.col.action = c("resample", "remove"), set.na.to = 0, verbose = FALSE)
 
 \item{scale.cols}{a logical value indicating whether to set column variances to 1}
 
-\item{steps}{an integer}
+\item{steps}{an integer (see Details)}
 
-\item{bad.row.action}{action to take when a row in x has 0 variance}
+\item{set.na.to}{if not \code{NA}, character string indicating how to handle \code{NA} values}
 
-\item{bad.col.action}{action to take when a column in x has 0 variance}
-
-\item{set.na.to}{numeric value to set NA values in x to}
+\item{zero.var.action}{action to take when a row/column in x has 0 variance}
 
 \item{verbose}{a logical value indicating whether to show status messages during execution}
 }
@@ -36,21 +34,32 @@ A scaled and/or centered matrix.
 Centers and/or scales the rows and/or columns of a numeric matrix.
 }
 \details{
-This function is a generalization of the generic function \code{\link[base]{scale}}, which
-operates on only the columns of a matrix.  This function (optionally) operates on both
+This function is a generalization of the generic function \code{\link[base]{scale}},
+which operates on only the columns of a matrix.  This function (optionally) operates on both
 the rows and columns simultaneously, providing a resulting matrix with both rows and
 columns having zero means and unit variance.
 
 The algorithm converges toward the solution in a stepwise manner - the larger the number
 of steps, the more accurate (i.e., the closer to the desired outcome) will be the final
-solution.  A step size of 1000 resulted in convergence (deviation from target < 2.2e-16)
+solution.  A \code{steps} value of 1000 resulted in convergence (deviation from target < 2.2e-16)
 in most test cases, but may be time consuming on large matrices.  Lower values for
-\code{steps} will execute faster, but with possible loss of accuracy; a \code{step} size
-< 100 is not recommended.
+\code{steps} will execute faster, but with possible loss of accuracy; a \code{steps} value
+less than 100 is not recommended.
 
 If either: a) both \code{center.cols} and \code{scale.cols} are \code{FALSE}, or b) both
 \code{center.rows} and \code{scale.rows} are \code{FALSE}, the function defaults to the
 generic \code{\link[base]{scale}} function (using transposition to handle the latter case).
+
+Prior to centering/scaling, \code{NA} values are replaced as indicated by \code{set.na.to}.
+If this is \code{NA} (the default), no action is taken.  Alternatively, \code{NA} values
+may be replaced by the global mean, the global median, or randomly resampled from the
+non-\code{NA} values in the matrix.
+
+\code{NA} values that would arise from a row/column desired to be scaled but having zero
+variance are handled using the method indicated by \code{zero.var.action}: "none" allows
+the \code{NA} values to appear in the return matrix, "remove" eliminates the offending
+row/column from the return matrix, and "resample" replaces the \code{NA} values with
+values selected randomly from the rest of the matrix.
 }
 \examples{
 x = matrix(rnorm(100), 10, 10)

@@ -5,7 +5,7 @@
 \title{Preprocess a data matrix}
 \usage{
 preprocessMatrix(x, center.cols = TRUE, scale.cols = FALSE, center.rows = FALSE,
-scale.rows = FALSE, simultaneous = FALSE, verbose = TRUE)
+scale.rows = FALSE, simultaneous = FALSE, set.na.to = c("mean", "median"), verbose = TRUE)
 }
 \arguments{
 \item{x}{a numeric matrix(-like object), typically with genes in rows and samples
@@ -19,7 +19,7 @@ scale.rows = FALSE, simultaneous = FALSE, verbose = TRUE)
 
 \item{scale.rows}{a logical value indicating whether to adjust rows to have unit variance}
 
-\item{verbose}{a logical value indicating the desired level of output as the algorithm runs}
+\item{set.na.to}{character string indicating how to handle `NA` values}
 
 \item{simlutanous}{a logical value indicating whether to adjust rows and columns simultaneously}
 }
@@ -31,7 +31,12 @@ Centers and/or scales the columns and/or rows of the input matrix.
 }
 \details{
 This function centers and/or scales the columns and/or rows of the input matrix.
-Default parameter values correspond to those of the fastICA algorithm.
+Default parameter values correspond to those of the fastICA algorithm in the fastICA
+package.
+
+If the matrix contains `NA` values after centering/scaling (this can happen, e.g., if a row
+in `x` has 0 variance), the `NA` values are replaced using the value indicated by `set.na.to`
+(either the global mean or median.)
 }
 \examples{
 x = matrix(rnorm(100), 10, 10)

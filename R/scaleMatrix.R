@@ -3,35 +3,45 @@
 #' @description Centers and/or scales the rows and/or columns of a numeric matrix.
 #'
 #' @usage scaleMatrix(x, center.rows = TRUE, center.cols = TRUE, scale.rows = TRUE,
-#' scale.cols = TRUE, steps = 1000, bad.row.action = c("resample", "remove"),
-#' bad.col.action = c("resample", "remove"), set.na.to = 0, verbose = FALSE)
+#' scale.cols = TRUE, steps = 1000, set.na.to = c(NA, "mean", "median", "resample"),
+#' zero.var.action = c("none", "resample", "remove"), verbose = FALSE)
 #'
 #' @param x a numeric matrix(-like object)
 #' @param center.rows a logical value indicating whether to set row means to 0
 #' @param center.cols a logical value indicating whether to set column means to 0
 #' @param scale.rows a logical value indicating whether to set row variances to 1
 #' @param scale.cols a logical value indicating whether to set column variances to 1
-#' @param steps an integer
-#' @param bad.row.action action to take when a row in x has 0 variance
-#' @param bad.col.action action to take when a column in x has 0 variance
-#' @param set.na.to numeric value to set NA values in x to
+#' @param steps an integer (see Details)
+#' @param set.na.to if not \code{NA}, character string indicating how to handle \code{NA} values
+#' @param zero.var.action action to take when a row/column in x has 0 variance
 #' @param verbose a logical value indicating whether to show status messages during execution
 #'
-#' @details This function is a generalization of the generic function \code{\link[base]{scale}}, which
-#' operates on only the columns of a matrix.  This function (optionally) operates on both
+#' @details This function is a generalization of the generic function \code{\link[base]{scale}},
+#' which operates on only the columns of a matrix.  This function (optionally) operates on both
 #' the rows and columns simultaneously, providing a resulting matrix with both rows and
 #' columns having zero means and unit variance.
 #'
 #' The algorithm converges toward the solution in a stepwise manner - the larger the number
 #' of steps, the more accurate (i.e., the closer to the desired outcome) will be the final
-#' solution.  A step size of 1000 resulted in convergence (deviation from target < 2.2e-16)
+#' solution.  A \code{steps} value of 1000 resulted in convergence (deviation from target < 2.2e-16)
 #' in most test cases, but may be time consuming on large matrices.  Lower values for
-#' \code{steps} will execute faster, but with possible loss of accuracy; a \code{step} size
-#' < 100 is not recommended.
+#' \code{steps} will execute faster, but with possible loss of accuracy; a \code{steps} value
+#' less than 100 is not recommended.
 #'
 #' If either: a) both \code{center.cols} and \code{scale.cols} are \code{FALSE}, or b) both
 #' \code{center.rows} and \code{scale.rows} are \code{FALSE}, the function defaults to the
 #' generic \code{\link[base]{scale}} function (using transposition to handle the latter case).
+#'
+#' Prior to centering/scaling, \code{NA} values are replaced as indicated by \code{set.na.to}.
+#' If this is \code{NA} (the default), no action is taken.  Alternatively, \code{NA} values
+#' may be replaced by the global mean, the global median, or randomly resampled from the
+#' non-\code{NA} values in the matrix.
+#'
+#' \code{NA} values that would arise from a row/column desired to be scaled but having zero
+#' variance are handled using the method indicated by \code{zero.var.action}: "none" allows
+#' the \code{NA} values to appear in the return matrix, "remove" eliminates the offending
+#' row/column from the return matrix, and "resample" replaces the \code{NA} values with
+#' values selected randomly from the rest of the matrix.
 #'
 #' @return A scaled and/or centered matrix.
 #'
@@ -52,11 +62,39 @@
 scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
                         scale.rows = TRUE, scale.cols = TRUE,
                         steps = 1000,
-                        bad.row.action = c("resample", "remove"),
-                        bad.col.action = c("resample", "remove"),
-                        set.na.to = 0, verbose = FALSE) {
+                        set.na.to = c(NA, "mean", "median", "resample"),
+                        zero.var.action = c("none", "resample", "remove"),
+                        verbose = FALSE) {
 
-  # If only only rows (or only columns) are to be modified, use the default
+  # Check input values
+  set.na.to = set.na.to[[1]]
+  zero.var.action = zero.var.action[[1]]
+  if(!(set.na.to %in% c(NA, "mean", "median", "resample"))) stop("Unrecognized set.na.to")
+  if(!(zero.var.action %in% c("none", "resample", "remove"))) stop("Unrecognized zero.var.action")
+
+  # Fix NA values
+  if(!(is.na(set.na.to))) {
+    x[is.na(x)] = switch(set.na.to,
+                         mean = mean(x, na.rm = TRUE),
+                         median = median(x, na.rm = TRUE),
+                         resample = {
+                           if(length(x[!is.na(x)]) == 0) stop("No non-NA values to sample from")
+                           sample(x[!(is.na(x))], sum(is.na(x)), replace = TRUE)
+                           },
+                         stop("Could not perform set.na.to action"))
+  } # Else: do nothing
+
+  # If scaling rows, find bad rows (rows with zero variance)
+  if(scale.rows) {
+    x = .scale.rows(x, zero.var.action[1], verbose)
+  }
+
+  # If scaling cols, find bad cols (cols with zero variance)
+  if(scale.cols) {
+    x = .scale.cols(x, zero.var.action[1], verbose)
+  }
+
+  # If only only rows (or only columns) are to be modified, use the base::scale
   # function
   if(!center.rows & !scale.rows) {
     return(scale(x, center = center.cols, scale = scale.cols))
@@ -66,20 +104,7 @@ scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
     return(t(scale(t(x), center = center.rows, scale = scale.rows)))
   }
 
-  # NA values need to be removed
-  if(is.na(set.na.to) | !is.numeric(set.na.to)) stop("set.na.to must be a numeric value.")
-  x[is.na(x)] = set.na.to
-
-  # If scaling rows, find bad rows (rows with zero variance)
-  if(scale.rows) {
-    x = .scale.rows(x, bad.row.action[1], verbose)
-  }
-
-  # If scaling cols, find bad cols (cols with zero variance)
-  if(scale.cols) {
-    x = .scale.cols(x, bad.col.action[1], verbose)
-  }
-
+  # Perform simultaneous centering/scaling
   for(i in c(1:steps)) {
     x.r = t(scale(t(x), center.rows, scale.rows))
     x.c = scale(x, center.cols, scale.cols)
@@ -87,9 +112,10 @@ scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
     x.c.d = x - x.c
     mean.diff = (x.r.d + x.c.d) / 2
     mean.diff = mean.diff * (i/steps)
-    if(verbose) message("Iteration ", i, " mean / max deviation from target: ", mean(mean.diff),
-                        " / ", max(abs(mean.diff)))
-    if(max(abs(mean.diff)) < 2.2e-16) {
+    if(verbose) message("Iteration ", i, " mean / max deviation from target: ",
+                        mean(mean.diff, na.rm = TRUE),
+                        " / ", max(abs(mean.diff), na.rm = TRUE))
+    if(max(abs(mean.diff), na.rm = TRUE) < 2.2e-16) {
       if(verbose) message("Convergence reached at iteration ", i)
       break
     }
@@ -97,11 +123,12 @@ scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
   }
   y = matrix(as.vector(x), dim(x)) # strip attributes
   dimnames(y) = dimnames(x)
-  #return(matrix(as.vector(x), dim(x)))
+
   return(y)
 }
 
 .scale.rows = function(x, bad.row.action, verbose) {
+  if(bad.row.action == "none") return(x)
   if(verbose) message("Checking rows... ", appendLF = FALSE)
   var.r = apply(x, 1, var, na.rm = TRUE)
   row.check = sum(var.r == 0)
@@ -119,12 +146,14 @@ scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
 
 .resample.rows = function(x, var.r) {
   # Resamples bad rows from the rest of the matrix
-  x[var.r == 0, ] = sample(x[var.r != 0], size = (ncol(x) * sum(var.r == 0)),
+  if(length(c(x[var.r != 0, ])) == 0) stop("No non-NA values to sample from")
+  x[var.r == 0, ] = sample(x[var.r != 0,], size = (ncol(x) * sum(var.r == 0)),
                          replace = TRUE)
   return(x)
 }
 
 .scale.cols = function(x, bad.col.action, verbose) {
+  if(bad.col.action == "none") return(x)
   if(verbose) message("Checking cols... ", appendLF = FALSE)
   var.c = apply(x, 2, var, na.rm = TRUE)
   col.check = sum(var.c == 0)
@@ -142,6 +171,7 @@ scaleMatrix <- function(x, center.rows = TRUE, center.cols = TRUE,
 
 .resample.cols = function(x, var.c) {
   # Resamples bad cols from the rest of the matrix
+  if(length(c(x[, var.c != 0])) == 0) stop("No non-NA values to sample from")
   x[, var.c == 0] = sample(x[, var.c != 0], size = (nrow(x) * sum(var.c == 0)),
                            replace = TRUE)
   return(x)

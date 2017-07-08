@@ -39,7 +39,7 @@ predictModules = function(x, n.comp = ceiling(ncol(x) / 4), ...) {
   res = dexFastICA(x, n.comp, ...)
   rownames(res$S) = rownames(x)
   colnames(res$A) = colnames(x)
-  return(list(S = res$S, A = res$A, attempts = res$attempts, iterations = res$iterations,
+  return(list(S = res$S, A = res$A, W = res$W, attempts = res$attempts, iterations = res$iterations,
               actual.tol = res$actual.tol, min.obs.tol = res$min.obs.tol,
               converged = res$converged))
 }

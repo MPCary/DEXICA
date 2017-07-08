@@ -24,6 +24,7 @@ setClassUnion("characterOrNULL", c("character", "NULL"))
 #'@slot params A ParameterSet object containing desired parameter ranges to be
 #'tested (see \code{\link[DEXICA]{parameterSet}})
 #'@slot output Character string name of output file
+#'@slot w.dir If not NULL, name of directory in which to save W matrix files
 #'
 #'@details A DexBatch object defines a set of jobs.  Each job first predicts a set of
 #'gene modules, then evaluates their quality.  Jobs within a DexBatch differ from
@@ -39,18 +40,24 @@ setClassUnion("characterOrNULL", c("character", "NULL"))
 #'the \code{\link[DEXICA]{parameterSet}} constructor.  If output is NULL, results will
 #'be directed to \code{stdout()}.
 #'
+#'w.dir indicates the directory in which to save W (unmixing) matrix files for later
+#'analysis.  The directory will be created if it does not exist; no W matrices will
+#'be saved if w.dir is NULL.
+#'
 #'@export
 dexBatch = setClass("DexBatch",
                       slots = c("compen" = "list",
                                 "annmats" = "list",
                                 "params" = "ParameterSet",
                                 "output" = "characterOrNULL",
+                                "w.dir" = "characterOrNULL",
                                 ".job.table" = "data.frame"
                                 )
 )
 
 setMethod(f= "initialize", signature = "DexBatch",
-          function(.Object, compen = NULL, annmats = NULL, params = NULL, output = NULL) {
+          function(.Object, compen = NULL, annmats = NULL, params = NULL, output = NULL,
+                   w.dir = NULL) {
             .Object@compen = compen
             .Object@annmats = annmats
             if(is.null(params)) {
@@ -64,6 +71,15 @@ setMethod(f= "initialize", signature = "DexBatch",
               .Object@output = "stdout"
             } else {
               .Object@output = output
+            }
+
+            # Create w.dir (if needed)
+            if(!(is.null(w.dir))) {
+              .Object@w.dir = w.dir
+              # Create w.dir if needed
+              if(!(file.exists(w.dir))){
+                dir.create(w.dir)
+              }
             }
 
             # Create job table
@@ -101,6 +117,20 @@ validDexBatch = function(object) {
     if(isOpen(con)) {
       # Connection opened successfully
       close(con)
+    } else {
+      return("could not open output file connection")
+    }
+  }
+
+  # Test w.dir
+  if(!(is.null(object@w.dir))) {
+    fp = tempfile(tmpdir = object@w.dir)
+    con = file(fp)
+    open(con, open = "a")
+    if(isOpen(con)) {
+      # Connection opened successfully
+      close(con)
+      file.remove(fp)
     } else {
       return("could not open output file connection")
     }
@@ -213,6 +243,13 @@ setMethod(f = "runJob", signature = "DexBatch",
                         "ica.min.obs.tol" = m$min.obs.tol,
                         "ica.converged" = m$converged)
 
+            # Save w matrix if desired
+            if(!is.null(object@w.dir)) {
+              w.file = file.path(object@w.dir, paste("W.", j, ".Rdata", sep = ""))
+              w.data = m$W
+              save(w.data, file = w.file)
+            }
+
             # Get module definitions
             if(verbose) message("Partitioning modules into sets...")
             S.vp = partition(m$S, method = "ann") # Variable partitioning
@@ -259,65 +296,3 @@ setMethod(f = "runJob", signature = "DexBatch",
             } # End write to file
           } # End runJob function
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# dexBatch = function(job_num, compen, annot, ParameterSet, results.file = "dexBatch.results.txt", p = 0.05) {
-#   # Get parameters for this job and load the x matrix
-#   params = getJobParameters(ParameterSet, j)
-#   results = c(params, "p.value.threshold" = p) # Named list
-#   x = data(eval(params$x))
-#
-#   # Preprocess matrix
-#   x.pp = preprocessMatrix(x, center.cols = params$center.cols, scale.cols = params$scale.cols,
-#                           center.rows = params$center.rows, scale.rows = params$scale.rows,
-#                           simultaneous = params$simultaneous, verbose = params$verbose)
-#
-#   # Generate a random seed and record it
-#   s = runif(1)
-#   results = c(results, "random.seed" = s)
-#   set.seed(s)
-#
-#   # Predict modules
-#   m = predictModules(x.pp, n.comp = params$n.comp, alg.typ = params$alg.typ, fun = params$fun, alpha = params$alpha,
-#                      maxit = params$maxit, tol = params$tol, w.init = params$w.init,
-#                      max.attempts = params$max.attempts, verbose = params$verbose)
-#
-#   # Check modules
-#   for(a in AnnotationMatrixList) {
-#     # Run check
-#     my.check = checkModules(m, local(get(load(a))))
-#
-#     # Generate named results
-#     names(my.check) = paste(names(a), names(my.check), sep = ".")
-#     results = c(results, my.check)
-#   }
-#
-#   # Write results to file
-#   write(results, file = file, append = TRUE, sep = "\t")
-#
-# }

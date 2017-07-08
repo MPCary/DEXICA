@@ -33,6 +33,10 @@ parallel (see Use Cases in the DEXICA vignette)
 If params is NULL, a single parameter set will be supplied using default values for
 the \code{\link[DEXICA]{parameterSet}} constructor.  If output is NULL, results will
 be directed to \code{stdout()}.
+
+w.dir indicates the directory in which to save W (unmixing) matrix files for later
+analysis.  The directory will be created if it does not exist; no W matrices will
+be saved if w.dir is NULL.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -55,5 +59,7 @@ in module evaltation (see \code{\link[DEXICA]{checkModules}})}
 tested (see \code{\link[DEXICA]{parameterSet}})}
 
 \item{\code{output}}{Character string name of output file}
+
+\item{\code{w.dir}}{If not NULL, name of directory in which to save W matrix files}
 }}
 

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Michael Cary" />
+
+<meta name="date" content="2019-02-28" />
+
+<title>Gene module prediction with DEXICA</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Gene module prediction with DEXICA</h1>
+<h4 class="author"><em>Michael Cary</em></h4>
+<h4 class="date"><em>2019-02-28</em></h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
+<li><a href="#getting-started"><span class="toc-section-number">2</span> Getting started</a><ul>
+<li><a href="#installation"><span class="toc-section-number">2.1</span> Installation</a></li>
+<li><a href="#gene-module-prediction"><span class="toc-section-number">2.2</span> Gene module prediction</a></li>
+<li><a href="#gene-module-validation"><span class="toc-section-number">2.3</span> Gene module validation</a></li>
+</ul></li>
+<li><a href="#batch-mode"><span class="toc-section-number">3</span> Batch mode</a><ul>
+<li><a href="#the-dexbatch-class"><span class="toc-section-number">3.1</span> The DexBatch class</a></li>
+<li><a href="#the-parameterset-class"><span class="toc-section-number">3.2</span> The ParameterSet class</a></li>
+<li><a href="#parallel-execution"><span class="toc-section-number">3.3</span> Parallel execution</a></li>
+</ul></li>
+<li><a href="#interpreting-results"><span class="toc-section-number">4</span> Interpreting results</a></li>
+<li><a href="#outlook"><span class="toc-section-number">5</span> Outlook</a></li>
+<li><a href="#citing-dexica"><span class="toc-section-number">6</span> Citing DEXICA</a></li>
+<li><a href="#reporting-problems-or-bugs"><span class="toc-section-number">7</span> Reporting problems or bugs</a></li>
+<li><a href="#session-information"><span class="toc-section-number">8</span> Session information</a></li>
+</ul>
+</div>
+
+<div id="overview" class="section level1">
+<h1><span class="header-section-number">1</span> Overview</h1>
+<p>Gene modules are sets of genes that are (or appear to be) co-regulated. The DEXICA package provides functions to infer gene modules from compendia of gene expression data (typically microarray data) using independent component analysis (ICA). The term DEXICA is an acronym for Deep EXtraction ICA, so named because it is designed to extract a large number of potentially weak signals from the input data.</p>
+<p>Because data artifacts and/or noise can exert an out-sized influence on weak signal recovery, the DEXICA process seeks to optimize data preprocessing procedures and parameters of the ICA algorithm using biological criteria. These criteria take a variety of forms and are generally organism-dependent, but some examples include gene function annotations, such as GO terms or REACTOME pathways, gene expression information (other than that in the compendium to be analyzed), such as tissue expression patterns, and regulatory sequence annotations. The package DEXDATA.Celegans provides several such files for the model organism <em>C. elegans</em>; the DEXICA package itself contains several data files derived from the <em>C. elegans</em> package for use in examples.</p>
+<p><em>Note: The examples in this vignette use truncated versions of several DEXDATA.Celegans data files (for example, a microarray compendium comprising 50 arrays rather than 1386) so that the examples will execute quickly on most machines.</em></p>
+</div>
+<div id="getting-started" class="section level1">
+<h1><span class="header-section-number">2</span> Getting started</h1>
+<div id="installation" class="section level2">
+<h2><span class="header-section-number">2.1</span> Installation</h2>
+<p>The DEXICA package (and supporting packages, such as DEXDATA.Celegans) can be installed from the MPCary code repository on GitHub.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>) <span class="co"># Skip this line if you aleady have devtools installed</span>
+<span class="kw">library</span>(devtools)
+<span class="kw">install_github</span>(<span class="st">&quot;MPCary/DEXICA&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)
+<span class="kw">install_github</span>(<span class="st">&quot;MPCary/DEXDATA.Celegans&quot;</span>) <span class="co"># C. elegans data package</span>
+<span class="co"># Note: It is advisable to restart your R session after running install_github</span>
+<span class="co"># due to a known issue in which documentation files are incorrectly reported</span>
+<span class="co"># to be corrupt.</span></code></pre></div>
+</div>
+<div id="gene-module-prediction" class="section level2">
+<h2><span class="header-section-number">2.2</span> Gene module prediction</h2>
+<p>The two main purposes of the DEXICA package are to: a) predict gene modules, and b) to evaluate the quality of those predictions using biological criteria.</p>
+<p>Module prediction is carried out by the <code>predictModules</code> function. It takes as input a (suitably preprocessed) compendium of expression data, and returns a list containing two matrices named <code>S</code> and <code>A</code>. If the input matrix comprises probesets in rows and microarrays in columns, the <code>S</code> matrix (referred to as the “source matrix” in ICA parlance) provides a weight for each probeset in each gene module (or independent component), and the <code>A</code> matrix (or “mixing matrix”) provides a weight for each module in each microarray.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DEXICA)
+
+<span class="co"># Load and preprocess microarray compendium</span>
+GPL200<span class="fl">.50</span>.pp =<span class="st"> </span><span class="kw">preprocessMatrix</span>(GPL200<span class="fl">.50</span>.mini)
+
+<span class="co"># Extract 10 modules from compendium</span>
+<span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># Set random seed for reproducibility</span>
+result =<span class="st"> </span><span class="kw">predictModules</span>(GPL200<span class="fl">.50</span>.pp, <span class="dt">n.comp =</span> <span class="dv">10</span>)
+<span class="kw">dim</span>(result$S) <span class="co"># Dimensions of S matrix</span></code></pre></div>
+<pre><code>## [1] 10000    10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">result$S[<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">1</span>:<span class="dv">3</span>] <span class="co"># First few rows and columns of S matrix</span></code></pre></div>
+<pre><code>##                   [,1]       [,2]       [,3]
+## 189865_s_at -0.7178507 -0.8223371  1.4361885
+## 174295_at   -1.7513868 -0.8105791 -0.2099288
+## 181985_s_at  1.6433072 -0.1203715 -0.3141570</code></pre>
+<div id="s-matrix-partitioning" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> S matrix partitioning</h3>
+<p>The S matrix can be thought of assigning a weight for each probeset in each module. While this matrix is useful for many purposes, it is sometimes desirable to derive discrete sets of genes from it for each module. This process is referred to as partitioning, and several approaches to partitioning have been described in the literature.</p>
+<p>Perhaps the most common approach is to apply a fixed threshold procedure. In ICA, the S matrix is standardized (such that each column has zero mean and unit variance), and the fixed threshold partitioning method assigns probesets with extreme values (e.g. &gt; 3 or &lt; -3) as being “in” the module. <em>N.b.</em>, because modules comprise both positive and negative values, partitioning gives rise to two disjoint sets of genes per S matrix column. We refer to the two opposite (in sign) halves of a module as “hemi-modules”.</p>
+<p>An alternative approach to partitioning, called variable threshold partitioning, is to apply a function that attempts to provide an optimal partitioning for each S matrix column independently based on some property (or properties) of the numbers comprising the column. The function <code>partion</code> allows for both fixed and variable threshold partitioning; the variable partitioning method uses an artificial neural network (ANN) that has been trained on simulated data to predict partition thresholds based on the 3rd and 4th moments of each column’s distribution.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Partition S matrix</span>
+S.fp =<span class="st"> </span><span class="kw">partition</span>(result$S, <span class="dt">method =</span> <span class="st">&quot;fixed&quot;</span>, <span class="dt">t =</span> <span class="dv">3</span>) <span class="co"># Fixed partitioning</span>
+S.vp =<span class="st"> </span><span class="kw">partition</span>(result$S, <span class="dt">method =</span> <span class="st">&quot;ann&quot;</span>) <span class="co"># Variable partitioning</span>
+
+<span class="co"># Separate positive sets from negative sets</span>
+S.fp.split =<span class="st"> </span><span class="kw">splitMatrix</span>(S.fp)
+S.vp.split =<span class="st"> </span><span class="kw">splitMatrix</span>(S.vp)
+
+<span class="co"># Count the number of probesets in each set</span>
+fp.counts =<span class="st"> </span><span class="kw">apply</span>(S.fp.split, <span class="dv">2</span>, sum)
+vp.counts =<span class="st"> </span><span class="kw">apply</span>(S.vp.split, <span class="dv">2</span>, sum)
+
+<span class="co"># Plot counts</span>
+count.matrix =<span class="st"> </span><span class="kw">rbind</span>(fp.counts, vp.counts)
+count.matrix =<span class="st"> </span>count.matrix[, <span class="kw">order</span>(<span class="kw">apply</span>(count.matrix, <span class="dv">2</span>, sum), <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]
+<span class="kw">barplot</span>(count.matrix, <span class="dt">beside =</span> <span class="ot">TRUE</span>, <span class="dt">xlab =</span> <span class="st">&quot;Hemi-modules&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Probesets&quot;</span>,
+        <span class="dt">names.arg =</span> <span class="kw">rep</span>(<span class="st">&quot;&quot;</span>, <span class="kw">ncol</span>(count.matrix)), <span class="dt">col =</span> <span class="dv">1</span>:<span class="dv">2</span>)
+<span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Fixed&quot;</span>, <span class="st">&quot;ANN&quot;</span>), <span class="dt">fill =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">cex =</span> <span class="fl">0.75</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="gene-module-validation" class="section level2">
+<h2><span class="header-section-number">2.3</span> Gene module validation</h2>
+<p>To check whether a set of predicted gene modules make sense, and to compare the relative quality of different predictions, one can compare module predictions with gene annotations that are believed or suspected to align (even loosely) with gene modularity. For example, there is a tendency of the genes involved in some (but certainly not all) biological processes to be co-regulated; a comprehensive set of biological process annotations may therefore be used to gauge module quality. It is not necessary to know <em>a priori</em> <em>which</em> processes are actually co-regulated - the non-co-regulated processes will simply be uninformative for our purpose and should neither falsely inflate nor deflate our confidence in a set of predicted modules provided we correct for multiple hypothesis testing.</p>
+<p>The function <code>checkModules</code> compares a (partitioned and split, as above) set of gene modules with a set of gene (or probeset) annotations. It calculates the enrichment of each annotation in each module using hypergeometric statistics, then adjusts all p-values using the FDR correction. It returns a list containing, among other items, the number of annotations found to be significant in at least one module (<code>anns.signif</code>).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Evaluate module predictions using GO annotations</span>
+fp.check.GO =<span class="st"> </span><span class="kw">checkModules</span>(S.fp.split, GPL200.GO.mini)
+vp.check.GO =<span class="st"> </span><span class="kw">checkModules</span>(S.vp.split, GPL200.GO.mini)
+
+<span class="kw">data.frame</span>(<span class="kw">rbind</span>(fp.check.GO, vp.check.GO))</code></pre></div>
+<pre><code>##             num.annotations num.modules anns.signif mods.signif
+## fp.check.GO            1000          20          53          11
+## vp.check.GO            1000          20          53          11</code></pre>
+<p>The <code>checkModules</code> function also returns the number of modules with at least one significant annotation (<code>mods.signif</code>), but this value should generally not be used to gauge the quality of a set of module predictions. In general, the true number of latent gene modules in a data set is unknown, and predicting additional significant modules may merely indicate that a once highly accurate module prediction becomes split into somewhat less accurate subsets when additional modules are extracted. Because the accuracy of ICA at predicting latent signal sources is maximal when the number of extracted components matches the number of latent signals, the total number of significant annotations across all modules should generally reach a maximum value when the true number of sources (<code>n.comp</code>) is extracted.</p>
+</div>
+</div>
+<div id="batch-mode" class="section level1">
+<h1><span class="header-section-number">3</span> Batch mode</h1>
+<p>The main idea behind DEXICA is to optimize gene module prediction through thorough sampling of the input parameter space; a DEXICA analysis may require hundreds or even thousands of separate ICA runs. The DexBatch class was created to make this process easier.</p>
+<div id="the-dexbatch-class" class="section level2">
+<h2><span class="header-section-number">3.1</span> The DexBatch class</h2>
+<p>A DexBatch object can be thought of as a foreman that directs the execution of (potentially) a large number of jobs. Each job consists of three main tasks:</p>
+<ul>
+<li>Preprocess a gene expression data matrix</li>
+<li>Predict gene modules</li>
+<li>Evaluate gene module quality</li>
+</ul>
+<p>When it is created, the DexBatch object must be supplied with a named list of one or more gene expression matrices, a named list of one or more gene annotation matrices (for use in module evaluation), and a set of parameters to test. The first two of these are relatively straight-forward - the named lists should be passed to the DexBatch constructor method (<code>dexBatch</code>) using the <code>compen</code> and <code>annmats</code> arguments. Specifying a parameter set is slightly more involved - an object of class ParameterSet must be created and passed to <code>dexBatch</code> in the <code>params</code> argument.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a simple DexBatch object</span>
+db =<span class="st"> </span><span class="kw">dexBatch</span>(<span class="dt">compen =</span> <span class="kw">list</span>(<span class="dt">compen1 =</span> GPL200<span class="fl">.50</span>.mini),
+              <span class="dt">annmats =</span> <span class="kw">list</span>(<span class="dt">annmat1 =</span> GPL200.GO.mini),
+              <span class="dt">params =</span> <span class="kw">parameterSet</span>(<span class="dt">n.comp =</span> <span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">20</span>)))
+<span class="kw">countJobs</span>(db)</code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>The code above creates a DexBatch that has two jobs. In both jobs, modules will be extracted from the <code>GPL200.50.mini</code> compendium and evaluated with the <code>GPL200.GO.mini</code> annotations. In job 1, 10 modules will be extracted, while in job 2, 20 modules will be extracted. To execute the jobs, use the <code>runJob</code> method.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run DexBatch jobs</span>
+for(i in <span class="dv">1</span>:<span class="kw">countJobs</span>(db)) {
+  <span class="kw">runJob</span>(db, i)
+}</code></pre></div>
+</div>
+<div id="the-parameterset-class" class="section level2">
+<h2><span class="header-section-number">3.2</span> The ParameterSet class</h2>
+<p>A ParameterSet object defines the range of parameters to test in a DexBatch. The ParameterSet constructor method is <code>parameterSet</code>; during object creation any missing arguments are given their default values. The default argument values match those of the <code>fastICA::fastICA</code> function with <code>n.comp = 1</code>.</p>
+<p>While all of the parameters in a ParameterSet may affect the quality of the resulting module predictions (save for <code>verbose</code>, which controls only how many status messages are displayed during execution), of particular note is the <code>n.comp</code> parameter, which controls how many independent components are extracted from the data matrix. Since the number of true latent signals (gene modules) in the data are not usually known, testing a range of values for <code>n.comp</code> is often advisable.</p>
+<p>The following code creates a ParameterSet that tests a range of <code>n.comp</code> values. The <code>getParamSetCount</code> method returns the size of the ParameterSet.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test a range of extracted components</span>
+n.comp.range =<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">5</span>, <span class="dt">to =</span> <span class="dv">100</span>, <span class="dt">by =</span> <span class="dv">5</span>)
+p =<span class="st"> </span><span class="kw">parameterSet</span>(<span class="dt">n.comp =</span> n.comp.range)
+<span class="kw">getParamSetCount</span>(p)</code></pre></div>
+<pre><code>## [1] 20</code></pre>
+<p>If we also wished to test the effect of centering and/or scaling the columns of the data matrix, we would add those to the <code>parameterSet</code> call. <em>N.b.,</em> adding two Boolean options to the ParameterSet increases its size by a factor of four.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test a range of extracted components and two preprocessing options</span>
+n.comp.range =<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">5</span>, <span class="dt">to =</span> <span class="dv">100</span>, <span class="dt">by =</span> <span class="dv">5</span>)
+p =<span class="st"> </span><span class="kw">parameterSet</span>(<span class="dt">n.comp =</span> n.comp.range, <span class="dt">center.cols =</span> <span class="kw">c</span>(T,F), <span class="dt">scale.cols =</span> <span class="kw">c</span>(T,F))
+<span class="kw">getParamSetCount</span>(p)</code></pre></div>
+<pre><code>## [1] 80</code></pre>
+<div id="replicate-runs" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Replicate runs</h3>
+<p>Another special parameter that may be of particular interest to many users is <code>w.init</code>. This parameter specifies a number (called a “seed value”) that will be used to reset the random number generator prior to a fastICA run (<em>n.b.</em>, this is slightly different from its definition in the <code>fastICA</code> package.)</p>
+<p>If <code>w.init</code> is not specified when a ParameterSet is created, it is given a random integer value (this value is recorded in the results generated by a DexBatch). If the user supplies a single value to <code>w.init</code>, that value will be used as the random seed for all runs (this is useful for replication of results.) If the user supplies multiple values to <code>w.init</code>, however, all of the other parameter ranges will be tested with each of the supplied values. This allows the user to test a particular combination of parameters from multiple different starting points; since fastICA is a stochastic algorithm, this can give users a better idea of whether a particular combination of parameters is truly better than another, and not merely preforming better due to random chance.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test two preprocessing options 5 times each</span>
+my.seeds =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">5</span>)
+p =<span class="st"> </span><span class="kw">parameterSet</span>(<span class="dt">n.comp =</span> <span class="dv">50</span>, <span class="dt">center.cols =</span> <span class="kw">c</span>(T,F), <span class="dt">scale.cols =</span> <span class="kw">c</span>(T,F), <span class="dt">w.init =</span> my.seeds)
+<span class="kw">getParamSetCount</span>(p)</code></pre></div>
+<pre><code>## [1] 20</code></pre>
+</div>
+</div>
+<div id="parallel-execution" class="section level2">
+<h2><span class="header-section-number">3.3</span> Parallel execution</h2>
+<p>If a DexBatch contains a large number of jobs, serial execution of those jobs may not be practical. For this reason, the DexBatch class was designed to handle parallel job execution. An optional argument in <code>dexBatch</code> is <code>output</code>. Supplying a file name to this argument results in job output being written to that file (if <code>output</code> is <code>NULL</code>, results are written to <code>stdout</code>.) By executing DexBatch jobs in parallel and writing all results to the same file, evaluating the effect of different parameter options on module quality becomes much easier.</p>
+<p>The code below shows an example of parallel execution on a typical Linux cluster. The first chunk of code creates and saves a DexBatch object. The second, which is meant to be executed in a parallel environment, loads the object and then runs one of its jobs. Not shown is a shell script that would direct the distribution and exectution of the second code chunk to various nodes in the cluster (shell script command syntax varies by cluster management software, consult your cluster’s user guide for more information).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create and save a DexBatch</span>
+my.seeds =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">3</span>)
+n.comp.range =<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">5</span>, <span class="dt">to =</span> <span class="dv">100</span>, <span class="dt">by =</span> <span class="dv">5</span>)
+p =<span class="st"> </span><span class="kw">parameterSet</span>(<span class="dt">n.comp =</span> n.comp.range, <span class="dt">center.cols =</span> <span class="kw">c</span>(T,F), <span class="dt">scale.cols =</span> <span class="kw">c</span>(T,F), <span class="dt">w.init =</span> my.seeds)
+db =<span class="st"> </span><span class="kw">dexBatch</span>(<span class="dt">compen =</span> <span class="kw">list</span>(<span class="dt">compen1 =</span> GPL200<span class="fl">.50</span>.mini),
+              <span class="dt">annmats =</span> <span class="kw">list</span>(<span class="dt">annmat1 =</span> GPL200.GO.mini),
+              <span class="dt">params =</span> p)
+<span class="kw">countJobs</span>(db) <span class="co"># 240 jobs</span>
+
+<span class="kw">save</span>(db, <span class="dt">file =</span> <span class="st">&quot;db.Rdata&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Call this script in parallel using cluster management software</span>
+<span class="kw">load</span>(<span class="dt">file =</span> <span class="st">&quot;db.Rdata&quot;</span>) <span class="co"># Load DexBatch object</span>
+j =<span class="st"> </span><span class="kw">getBatchJobID</span>() <span class="co"># Get ID of current job</span>
+<span class="kw">runJob</span>(db, j)</code></pre></div>
+</div>
+</div>
+<div id="interpreting-results" class="section level1">
+<h1><span class="header-section-number">4</span> Interpreting results</h1>
+<p>The output file generated by running the jobs defined in a DexBatch can be used as input to subsequent analyses, such as ANOVA, to determine the optimal parameter set. A typical workflow might be to first use ANOVA to determine all optimal parameters other than n.comp, then to plot the results for that parameter set over the range of n.comp tested, using a loess regression line to determine the optimal n.comp.</p>
+</div>
+<div id="outlook" class="section level1">
+<h1><span class="header-section-number">5</span> Outlook</h1>
+<p>Additional features are planned for subsequent versions of this package; these include:</p>
+<ul>
+<li><p>KS-based evaluation of module quality - Instead of partitioning modules into discrete sets and using hypergeometric statistics to test for annotation enrichment, an option to use KS (Kolmogorov-Smirnov) tests to check module quality will be added to the <code>checkModules</code> function.</p></li>
+<li><p>Additional flavors of the ICA algorithm will be supported.</p></li>
+<li><p>Subset testing - This feature will allow <code>checkModules</code> to run on a subset of module genes. By optimizing module prediction with a subset of genes (training set), then evaluating modules with a left-out set (validation set), users can test whether predicted modules were over-fit to the training set.</p></li>
+<li><p>Solution space mapping - This feature will help users generate a map of the ICA solution space and to map module quality indicators onto that map in order to better determine the final solution (i.e., a set of predicted modules) in a DEXICA analysis.</p></li>
+</ul>
+</div>
+<div id="citing-dexica" class="section level1">
+<h1><span class="header-section-number">6</span> Citing DEXICA</h1>
+<p>Insert paper citation here.</p>
+</div>
+<div id="reporting-problems-or-bugs" class="section level1">
+<h1><span class="header-section-number">7</span> Reporting problems or bugs</h1>
+<p>To report a bug in the DEXICA package, please contact the current package maintainer, who can be found using this function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">maintainer</span>(<span class="st">&quot;DEXICA&quot;</span>)</code></pre></div>
+</div>
+<div id="session-information" class="section level1">
+<h1><span class="header-section-number">8</span> Session information</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
+<pre><code>## R version 3.3.2 (2016-10-31)
+## Platform: x86_64-apple-darwin13.4.0 (64-bit)
+## Running under: macOS Sierra 10.12.6
+## 
+## locale:
+## [1] C/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] DEXICA_0.1.2
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.15    roxygen2_6.0.1  digest_0.6.12   crayon_1.3.2   
+##  [5] withr_2.1.1     rprojroot_1.2   assertthat_0.1  commonmark_1.2 
+##  [9] R6_2.2.0        backports_1.1.3 magrittr_1.5    evaluate_0.10  
+## [13] neuralnet_1.33  stringi_1.1.2   testthat_1.0.2  xml2_1.1.1     
+## [17] rmarkdown_1.5   moments_0.14    devtools_1.13.1 desc_1.1.0     
+## [21] tools_3.3.2     stringr_1.2.0   yaml_2.1.14     htmltools_0.3.6
+## [25] memoise_1.0.0   knitr_1.16</code></pre>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

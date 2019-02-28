@@ -15,7 +15,7 @@ vignette: >
 
 # Overview
 
-Gene modules are sets of genes that are (or appear to be) co-regulated.  The DEXICA package provides functions to infer gene modules from compendia of gene expression data (typically microarray data) using independent component analysis (ICA).  The term DEXICA is an acronym for Deep EXtraction ICA, which hints at its use to extract a large number of (potentially) weak signals from the input data.
+Gene modules are sets of genes that are (or appear to be) co-regulated.  The DEXICA package provides functions to infer gene modules from compendia of gene expression data (typically microarray data) using independent component analysis (ICA).  The term DEXICA is an acronym for Deep EXtraction ICA, so named because it is designed to extract a large number of potentially weak signals from the input data.
 
 Because data artifacts and/or noise can exert an out-sized influence on weak signal recovery, the DEXICA process seeks to optimize data preprocessing procedures and parameters of the ICA algorithm using biological criteria.  These criteria take a variety of forms and are generally organism-dependent, but some examples include gene function annotations, such as GO terms or REACTOME pathways, gene expression information (other than that in the compendium to be analyzed), such as tissue expression patterns, and regulatory sequence annotations. The package DEXDATA.Celegans provides several such files for the model organism *C. elegans*; the DEXICA package itself contains several data files derived from the *C. elegans* package for use in examples.
 
@@ -86,7 +86,7 @@ legend("topright", legend = c("Fixed", "ANN"), fill = 1:2, cex = 0.75)
 
 ## Gene module validation
 
-To check whether a set of predicted gene modules make sense, and to compare the relative quality of different predictions, one can compare module predictions with gene annotations that are believed or suspected to align (even loosely) with gene modularity.  For example, there is a tendency of the genes involved in some (but certainly not all) biological processes to be co-regulated; a comprehensive set of biological process annotations may therefore be used to gauge module quality.  It is not necessary to know *a priori* *which* processes are actually co-regulated - the non-co-regulated processes will simply be uninformative for our purpose and should neither falsely inflate nor deflate our confidence in a set of predicted modules provided we perform the statistical analysis correctly.
+To check whether a set of predicted gene modules make sense, and to compare the relative quality of different predictions, one can compare module predictions with gene annotations that are believed or suspected to align (even loosely) with gene modularity.  For example, there is a tendency of the genes involved in some (but certainly not all) biological processes to be co-regulated; a comprehensive set of biological process annotations may therefore be used to gauge module quality.  It is not necessary to know *a priori* *which* processes are actually co-regulated - the non-co-regulated processes will simply be uninformative for our purpose and should neither falsely inflate nor deflate our confidence in a set of predicted modules provided we correct for multiple hypothesis testing.
 
 The function `checkModules` compares a (partitioned and split, as above) set of gene modules with a set of gene (or probeset) annotations.  It calculates the enrichment of each annotation in each module using hypergeometric statistics, then adjusts all p-values using the FDR correction.  It returns a list containing, among other items, the number of annotations found to be significant in at least one module (`anns.signif`).
 
@@ -112,7 +112,7 @@ A DexBatch object can be thought of as a foreman that directs the execution of (
 * Predict gene modules
 * Evaluate gene module quality
 
-When it is created, the DexBatch object must be supplied with a named list of one or more gene expression matrices, a named list of one or more gene annotation matrices (to use for module evaluation), and a set of parameters to test.  The first two of these are relatively straight-forward - the named lists should be passed to the DexBatch constructor method (`dexBatch`) using the `compen` and `annmats` arguments.  Specifying a parameter set is slightly more involved - an object of class ParameterSet must be created and passed to `dexBatch` in the `params` argument.
+When it is created, the DexBatch object must be supplied with a named list of one or more gene expression matrices, a named list of one or more gene annotation matrices (for use in module evaluation), and a set of parameters to test.  The first two of these are relatively straight-forward - the named lists should be passed to the DexBatch constructor method (`dexBatch`) using the `compen` and `annmats` arguments.  Specifying a parameter set is slightly more involved - an object of class ParameterSet must be created and passed to `dexBatch` in the `params` argument.
 
 ```{r, eval = TRUE}
 # Create a simple DexBatch object
@@ -195,11 +195,11 @@ runJob(db, j)
 
 # Interpreting results
 
-Insert section on determining optimal parameters from the results of a DexBatch run.
+The output file generated by running the jobs defined in a DexBatch can be used as input to subsequent analyses, such as ANOVA, to determine the optimal parameter set.  A typical workflow might be to first use ANOVA to determine all optimal parameters other than n.comp, then to plot the results for that parameter set over the range of n.comp tested, using a loess regression line to determine the optimal n.comp.
 
 # Outlook
 
-The current version of the DEXICA package should still be considered a work-in-progress.  Additional features will be added to subsequent versions, these include:
+Additional features are planned for subsequent versions of this package; these include:
 
 * KS-based evaluation of module quality - Instead of partitioning modules into discrete sets and using hypergeometric statistics to test for annotation enrichment, an option to use KS (Kolmogorov-Smirnov) tests to check module quality will be added to the `checkModules` function.
 

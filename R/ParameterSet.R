@@ -13,7 +13,7 @@ setClassUnion("numericOrNULL", c("numeric", "NULL"))
 #'
 #'@usage ## Constructor:
 #'parameterSet(n.comp = 1, center.cols = c(TRUE), scale.cols = c(FALSE),
-#'center.rows = c(FALSE), scale.rows = c(FALSE), simultaneous = c(FALSE),
+#'center.rows = c(FALSE), scale.rows = c(FALSE),
 #'alg.typ = "parallel", fun = "logcosh", alpha = 1,
 #'maxit = 200, tol = 1e-04, w.init = NULL, max.attempts = 3, verbose = FALSE)
 #'
@@ -50,7 +50,6 @@ parameterSet = setClass(
     scale.cols = "logical",
     center.rows = "logical",
     scale.rows = "logical",
-    simultaneous = "logical",
     alg.typ = "character",
     fun = "character",
     alpha = "numeric",
@@ -69,7 +68,6 @@ setMethod(f = "initialize", signature = "ParameterSet",
                    scale.cols = c(FALSE),
                    center.rows = c(FALSE),
                    scale.rows = c(FALSE),
-                   simultaneous = c(FALSE),
                    alg.typ = "parallel",
                    fun = "logcosh",
                    alpha = 1,
@@ -85,7 +83,6 @@ setMethod(f = "initialize", signature = "ParameterSet",
   .Object@scale.cols = scale.cols
   .Object@center.rows = center.rows
   .Object@scale.rows = scale.rows
-  .Object@simultaneous = simultaneous
   .Object@alg.typ = alg.typ
   .Object@fun = fun
   .Object@alpha = alpha
@@ -101,7 +98,7 @@ setMethod(f = "initialize", signature = "ParameterSet",
   # Build table of parameter sets to test
   param.space = expand.grid(n.comp = n.comp, center.cols = center.cols,
                           scale.cols = scale.cols, center.rows = center.rows,
-                          scale.rows = scale.rows, simultaneous = simultaneous,
+                          scale.rows = scale.rows,
                           alg.typ = alg.typ, fun = fun,
                           alpha = alpha, maxit = maxit, tol = tol, w.init = w.init,
                           max.attempts = max.attempts, verbose = verbose,

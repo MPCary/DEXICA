@@ -191,7 +191,6 @@ setMethod(f = "runJob", signature = "DexBatch",
                                     scale.cols = my.params$scale.cols,
                                     center.rows = my.params$center.rows,
                                     scale.rows = my.params$scale.rows,
-                                    simultaneous = my.params$simultaneous,
                                     verbose = my.params$verbose)
 
             # Predict modules
@@ -295,7 +294,7 @@ setMethod(f = "runJob", signature = "DexBatch",
 #   # Preprocess matrix
 #   x.pp = preprocessMatrix(x, center.cols = params$center.cols, scale.cols = params$scale.cols,
 #                           center.rows = params$center.rows, scale.rows = params$scale.rows,
-#                           simultaneous = params$simultaneous, verbose = params$verbose)
+#                           verbose = params$verbose)
 #
 #   # Generate a random seed and record it
 #   s = runif(1)

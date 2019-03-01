@@ -12,7 +12,7 @@
 \usage{
 ## Constructor:
 parameterSet(n.comp = 1, center.cols = c(TRUE), scale.cols = c(FALSE),
-center.rows = c(FALSE), scale.rows = c(FALSE), simultaneous = c(FALSE),
+center.rows = c(FALSE), scale.rows = c(FALSE),
 alg.typ = "parallel", fun = "logcosh", alpha = 1,
 maxit = 200, tol = 1e-04, w.init = NULL, max.attempts = 3, verbose = FALSE)
 
